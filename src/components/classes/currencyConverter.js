@@ -1,4 +1,7 @@
 export default {
+    labels: {
+        'equal': 'equals'
+    },
     currency: [
         {'abbreviation': 'AUD', 'name': 'Australian Dollar'},
         {'abbreviation': 'EUR', 'name': 'Euro'},

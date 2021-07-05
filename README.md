@@ -9,5 +9,4 @@ npm run serve
 ```
 
 * Style can be customized in `currencycalculator.scss`
-* List of currency can be easily customized in `currencyList.js`
-* List of labels can be easily customized in `labels.js`
+* List of currency and labels can be easily customized in `currencyConverter.js`

@@ -28,14 +28,13 @@
 </template>
 
 <script>
-import currencyList from "@/components/classes/currencyList";
-import labels from "@/components/classes/labels";
+import currencyConverter from "@/components/classes/currencyConverter";
 
 export default {
   name: "CurrencyConverter",
 
   data() {
-    const currency = currencyList.currency;
+    const currency = currencyConverter.currency;
     return {
       startValue: 1,
       convertedValue: 0,
@@ -44,8 +43,6 @@ export default {
       currency,
       firstSelect: "EUR",
       secondSelect: "USD",
-      fromCurrency: "EUR",
-      toCurrency: "USD",
       errorMessage: false
     }
   },
@@ -57,7 +54,7 @@ export default {
   methods: {
     async calculateConversion(el) {
       this.errorMessage = false;
-      const query = this.fromCurrency + '_' + this.toCurrency;
+      const query = this.firstSelect + '_' + this.secondSelect;
       const url = "https://free.currconv.com/api/v7/convert?q=" + query + "&compact=ultra&apiKey=0fa15aba08a788864288";
 
       try {
@@ -65,10 +62,11 @@ export default {
         const exchangeRate = response.data[query];
 
         //calculate exchange rate
-        if (el) {
+        if (!el) {
+          this.convertedValue = (exchangeRate * 1).toFixed(4);
+        } else {
           const firstInput = document.getElementById("converter-first-input").value.replace(',', '.');
           const secondInput = document.getElementById("converter-second-input").value.replace(',', '.');
-
           if (el.target.id === "converter-second-input") {
             this.startValue = (exchangeRate * secondInput).toFixed(4);
             this.convertedValue = secondInput;
@@ -76,11 +74,9 @@ export default {
             this.startValue = firstInput;
             this.convertedValue = (exchangeRate * firstInput).toFixed(4);
           }
-        } else {
-          this.convertedValue = (exchangeRate * 1).toFixed(4);
         }
 
-        this.startTextLabel = `1 ${this.$refs.firstSelect.selectedOptions[0].text} ${labels.equal}`;
+        this.startTextLabel = `1 ${this.$refs.firstSelect.selectedOptions[0].text} ${currencyConverter.labels.equal}`;
         this.convertedTextLabel = exchangeRate.toFixed(4) + " " + this.$refs.secondSelect.selectedOptions[0].text;
       } catch (error) {
         this.errorMessage = error.response.data.error;
@@ -90,19 +86,17 @@ export default {
   },
 
   watch: {
-    firstSelect(val) {
+    firstSelect(val, oldVal) {
       if (this.secondSelect === val) {
         this.firstSelect = val;
-        this.secondSelect = this.fromCurrency;
+        this.secondSelect = oldVal;
       }
-      this.fromCurrency = val;
     },
-    secondSelect(val) {
+    secondSelect(val, oldVal) {
       if (this.firstSelect === val) {
-        this.firstSelect = this.toCurrency;
+        this.firstSelect = oldVal;
         this.secondSelect = val;
       }
-      this.toCurrency = val;
     }
   },
 
